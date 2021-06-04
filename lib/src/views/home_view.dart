@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 
+import 'package:conversor_moedas/src/controllers/home_controller.dart';
 import 'package:conversor_moedas/src/components/currency_box.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  late HomeController homeController;
+
+  final TextEditingController toText = TextEditingController();
+  final TextEditingController fromText = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    homeController = HomeController(toText, fromText);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,11 +44,29 @@ class HomeView extends StatelessWidget {
                 SizedBox(
                   height: 40,
                 ),
-                CurrencyBox(),
+                CurrencyBox(
+                  items: homeController.currencies,
+                  controller: toText,
+                  selectedItem: homeController.toCurrency,
+                  onChanged: (model) {
+                    setState(() {
+                      homeController.toCurrency = model;
+                    });
+                  },
+                ),
                 SizedBox(
                   height: 10,
                 ),
-                CurrencyBox(),
+                CurrencyBox(
+                  items: homeController.currencies,
+                  controller: fromText,
+                  selectedItem: homeController.fromCurrency,
+                  onChanged: (model) {
+                    setState(() {
+                      homeController.fromCurrency = model;
+                    });
+                  },
+                ),
                 SizedBox(
                   height: 30,
                 ),
@@ -39,7 +74,9 @@ class HomeView extends StatelessWidget {
                   width: 150,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      homeController.convert();
+                    },
                     child: Text(
                       'Converter',
                       style: TextStyle(fontSize: 18),
